@@ -84,18 +84,19 @@ namespace Assessment2
                 if (email[0] != '@' && email[email.Length - 1] != '@')
                 {
                     //check individual letters
-                    for (int i = indexOfAt - 1; i >= 0; i--)
+                    for(int i = indexOfAt-1; i >= 0; i--)
                     {
                         if (validPrefix.IsMatch(email[i].ToString()))
                         {
-                            if (!invalidPrefixEnd.IsMatch(email[i].ToString()))
+                            if (!invalidPrefixEnd.IsMatch(email[indexOfAt - 1].ToString()))
                             {
                                 prefix = true;
                             }
+                        }
+                        else
+                        {
                             break;
                         }
-                        Console.WriteLine("not true");
-                        break;
                     }
                     for (int i = indexOfAt + 1; i <= email.Length - 1; i++)
                     {
@@ -111,7 +112,6 @@ namespace Assessment2
                         }
                         else
                         {
-                            Console.WriteLine("Contains _ or no dot");
                             break;
                         }
                     }

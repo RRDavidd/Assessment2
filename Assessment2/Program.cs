@@ -83,6 +83,7 @@ namespace Assessment2
             {
                 if (email[0] != '@' && email[email.Length - 1] != '@')
                 {
+                    //check individual letters
                     for (int i = indexOfAt - 1; i >= 0; i--)
                     {
                         if (validPrefix.IsMatch(email[i].ToString()))

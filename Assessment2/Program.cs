@@ -24,7 +24,8 @@ namespace Assessment2
                         if (optionValue == 1)
                         {
                             Console.WriteLine(" ");
-                            Registration();
+                            registration();
+                            
                         }
                     }
                     if (optionValue > 2 || optionValue < 1)
@@ -38,8 +39,13 @@ namespace Assessment2
             Environment.Exit(0);
         }
 
-
-        public static void Registration()
+        public static void addData(string username, string email, string password)
+        {
+            Data db = new Data();
+            db.Path = "C:/hello.txt";
+            Console.WriteLine(db.writeFile(username, email, password));
+        }
+        public static void registration()
         {
             Console.WriteLine("Registration\n------------");
             Console.WriteLine(" ");
@@ -66,7 +72,9 @@ namespace Assessment2
             //PASSWORD INPUT CRITERIA                        
             if (passwordCriteriaCheck(password) && !usernameValid && emailValid)
             {
-                Console.WriteLine("Registration Complete!");
+                User newUser = new User(username, email, password);
+                addData(newUser.name, newUser.email, newUser.password);
+                Console.WriteLine("Client " + username + "(" + email + " has successfully registered at the Auction House.");
             }
         }
         public static bool checkEmail(string email)

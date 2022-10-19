@@ -19,14 +19,37 @@ namespace Assessment2
             set { path = value;} 
         }
 
+        public bool readFile()
+        {
+            try
+            {
+                sr = new StreamReader(Path);
+                string lines;
+                while ((lines = sr.ReadLine()) != null)
+                {
+                    Console.WriteLine(lines);
+                    if (lines.Contains("Raph"))
+                    {
+                        Console.WriteLine("Raph exists");
+                    }
+                }
+                return true;
+            }
+            catch
+            {
+                Console.WriteLine("Cannot read file");
+                return false;
+            }
+        }
+
         public bool writeFile(string username, string email, string password)
         {
-            Console.WriteLine("file creation:" + createFile());
+            createFile();
             try
             {
                 fs = new FileStream(Path, FileMode.Append);
                 sw = new StreamWriter(fs);
-                sw.WriteLine(username + email + password);
+                sw.WriteLine(username + ";" + email + ";" + password);
                 sw.Close();
                 fs.Close();
                 return true;
@@ -52,6 +75,7 @@ namespace Assessment2
             {
                 return false;
             }
+
         }
     }
 }

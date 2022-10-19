@@ -14,9 +14,9 @@ namespace Assessment2
 
         public User(string name, string email, string password)
         {
-            this.name = name + ";";
-            this.email = email + ";";
-            this.password = password + ";";
+            this.name = name;
+            this.email = email;
+            this.password = password;
         }
     }
 

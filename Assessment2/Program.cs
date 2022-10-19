@@ -41,12 +41,15 @@ namespace Assessment2
 
         public static void addData(string username, string email, string password)
         {
+            User user = new User(username, email, password);
             Data db = new Data();
-            db.Path = "C:/hello.txt";
-            Console.WriteLine(db.writeFile(username, email, password));
+            db.Path = "Users.txt";
+            db.writeFile(user.name, user.email, user.password);
+            db.readFile();
         }
         public static void registration()
         {
+            
             Console.WriteLine("Registration\n------------");
             Console.WriteLine(" ");
             Console.WriteLine("Please enter your name");
@@ -72,8 +75,7 @@ namespace Assessment2
             //PASSWORD INPUT CRITERIA                        
             if (passwordCriteriaCheck(password) && !usernameValid && emailValid)
             {
-                User newUser = new User(username, email, password);
-                addData(newUser.name, newUser.email, newUser.password);
+                addData(username, email, password);
                 Console.WriteLine("Client " + username + "(" + email + " has successfully registered at the Auction House.");
             }
         }

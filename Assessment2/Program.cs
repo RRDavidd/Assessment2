@@ -44,12 +44,16 @@ namespace Assessment2
             User user = new User(username, email, password);
             Data db = new Data();
             db.Path = "Users.txt";
-            db.writeFile(user.name, user.email, user.password);
-            db.readFile();
+            if (!db.checkEmailUniqueness(email))
+            {
+                db.writeFile(username, email, password);
+                Console.WriteLine("Client " + username + "(" + email + " has successfully registered at the Auction House.");
+            }
         }
         public static void registration()
         {
-            
+            Data db = new Data();
+            db.Path = "Users.txt";
             Console.WriteLine("Registration\n------------");
             Console.WriteLine(" ");
             Console.WriteLine("Please enter your name");
@@ -76,7 +80,6 @@ namespace Assessment2
             if (passwordCriteriaCheck(password) && !usernameValid && emailValid)
             {
                 addData(username, email, password);
-                Console.WriteLine("Client " + username + "(" + email + " has successfully registered at the Auction House.");
             }
         }
         public static bool checkEmail(string email)

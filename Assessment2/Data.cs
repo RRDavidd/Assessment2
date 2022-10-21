@@ -19,20 +19,49 @@ namespace Assessment2
             set { path = value;} 
         }
 
-        public bool readFile()
+        public bool checkEmailUniqueness(string email)
+        {
+            try
+            {
+                fs = new FileStream(path, FileMode.Open);
+                sr = new StreamReader(fs);
+                while (!sr.EndOfStream)
+                {
+                    string line = sr.ReadLine();
+                    if (line.Contains(email))
+                    {
+                        Console.WriteLine("Email is not unique");
+                        return true;
+                    }
+                }
+                fs.Close();
+                sr.Close();
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool readFile(string email, string password)
         {
             try
             {
                 sr = new StreamReader(Path);
-                string lines;
-                while ((lines = sr.ReadLine()) != null)
+                while (!sr.EndOfStream)
                 {
-                    Console.WriteLine(lines);
-                    if (lines.Contains("Raph"))
+                    string line = sr.ReadLine();
+                    if (line.Contains(email + ";" + password))
                     {
-                        Console.WriteLine("Raph exists");
+                        Console.WriteLine("RETURNED LINE " + line);
+                    }
+                    else
+                    {
+                        continue;
                     }
                 }
+                sr.Close();
                 return true;
             }
             catch

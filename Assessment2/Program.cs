@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace Assessment2
@@ -27,6 +28,12 @@ namespace Assessment2
                             registration();
                             
                         }
+                        if (optionValue == 2)
+                        {
+                            Console.WriteLine(" ");
+                            login();
+
+                        }
                     }
                     if (optionValue > 2 || optionValue < 1)
                     {
@@ -39,6 +46,30 @@ namespace Assessment2
             Environment.Exit(0);
         }
 
+        public static void login()
+        {
+            Data db = new Data();
+            db.Path = "Users.txt";
+            Console.WriteLine("Login\n------------");
+            Console.WriteLine(" ");
+            Console.WriteLine("Please enter your name");
+            string username = Console.ReadLine();
+            Console.WriteLine(" ");
+            Console.WriteLine("Please enter your email address");
+            string email = Console.ReadLine();
+            Console.WriteLine(" ");
+            Console.WriteLine("Enter your password");
+            string password = Console.ReadLine();
+            if(db.readFile(email, password))
+            {
+                Console.WriteLine("Thiss shit exists");
+            }
+            else
+            {
+                Console.WriteLine("Incorrect Email/Password");
+            }
+
+        }
         public static void addData(string username, string email, string password)
         {
             User user = new User(username, email, password);

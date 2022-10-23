@@ -48,7 +48,7 @@ namespace Assessment2
         {
             try
             {
-                sr = new StreamReader(Path);
+                sr = new StreamReader(path);
                 while (!sr.EndOfStream)
                 {
                     string line = sr.ReadLine();
@@ -76,7 +76,7 @@ namespace Assessment2
             createFile();
             try
             {
-                fs = new FileStream(Path, FileMode.Append);
+                fs = new FileStream(path, FileMode.Append);
                 sw = new StreamWriter(fs);
                 sw.WriteLine(username + ";" + email + ";" + password);
                 sw.Close();
@@ -85,6 +85,7 @@ namespace Assessment2
             }
             catch
             {
+                Console.WriteLine("Cannot write on file, please restart program");
                 return false;
             }
         }

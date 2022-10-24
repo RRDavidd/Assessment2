@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -8,6 +9,11 @@ namespace Assessment2
     class Program
     {
         public static void Main(string[] args)
+        {
+            menu();
+        }
+
+        public static void menu()
         {
             Console.WriteLine("+------------------------------+\n| Welcome to the Auction House |\n+------------------------------+");
             Console.WriteLine(" ");
@@ -26,7 +32,7 @@ namespace Assessment2
                         {
                             Console.WriteLine(" ");
                             registration();
-                            
+
                         }
                         if (optionValue == 2)
                         {
@@ -45,7 +51,6 @@ namespace Assessment2
             } while (run);
             Environment.Exit(0);
         }
-
         public static void login()
         {
             Data db = new Data();
@@ -60,15 +65,49 @@ namespace Assessment2
             Console.WriteLine(" ");
             Console.WriteLine("Enter your password");
             string password = Console.ReadLine();
-            if(db.readFile(email, password))
+            if(db.readFile(username, email, password))
             {
-                Console.WriteLine("Thiss shit exists");
+                clientMenu(username, email, password);
             }
             else
             {
                 Console.WriteLine("Incorrect Email/Password");
             }
-
+        }
+        public static void clientMenu(string username, string email, string password)
+        {
+            Console.WriteLine(" ");
+            Console.WriteLine("Client Menu\r\n-----------\r\n(1) Advertise Product\r\n(2) View My Product List\r\n(3) Search For Advertised Products\r\n(4) View Bids On My Products\r\n(5) View My Purchased Items\r\n(6) Log off ");
+            Console.WriteLine(" ");
+            Console.WriteLine("Choose from 1-6");
+            bool option = Int32.TryParse(Console.ReadLine(), out int optionValue);
+            if (option)
+            {
+                if(optionValue == 1)
+                {
+                    Console.WriteLine("1");
+                }
+                if (optionValue == 2)
+                {
+                    Console.WriteLine("2");
+                }
+                if (optionValue == 3)
+                {
+                    Console.WriteLine("3");
+                }
+                if (optionValue == 4)
+                {
+                    Console.WriteLine("4");
+                }
+                if (optionValue == 5)
+                {
+                    Console.WriteLine("5");
+                }
+                if (optionValue == 6)
+                {
+                    menu();
+                }
+            }
         }
         public static void addData(string username, string email, string password)
         {
@@ -188,4 +227,4 @@ namespace Assessment2
             }
         }
     }
-}
+}    //@joie: I LOVE RR DABED <3 

@@ -44,29 +44,68 @@ namespace Assessment2
             }
         }
 
-        public bool readFile(string email, string password)
+        public bool readFile(string username, string email, string password)
         {
             try
             {
                 sr = new StreamReader(path);
+                bool found = false;
                 while (!sr.EndOfStream)
                 {
                     string line = sr.ReadLine();
-                    if (line.Contains(email + ";" + password))
+                    if (line.Contains(username + ";" + email + ";" + password))
                     {
                         Console.WriteLine("RETURNED LINE " + line);
-                    }
-                    else
-                    {
-                        continue;
+                        found = true;
+                        return true;
                     }
                 }
+                if (!found)
+                {
+                    Console.WriteLine("Cannot find user");
+                    return false;
+                }
                 sr.Close();
-                return true;
+                return false;
             }
             catch
             {
                 Console.WriteLine("Cannot read file");
+                return false;
+            }
+        }
+
+        public bool addAddress()
+        {
+            try
+            {
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool splitString(string username, string email, string password)
+        {
+            try
+            {
+                string splitThis = username + email + password;
+                string[] split = splitThis.Split(';');
+
+                foreach (string s in split)
+                {
+                    if (s != username + email + password)
+                    {
+                        Console.WriteLine(s);
+                    }       
+                }
+                return true;
+            }
+            catch
+            {
                 return false;
             }
         }

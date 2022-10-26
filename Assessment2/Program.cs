@@ -65,16 +65,83 @@ namespace Assessment2
             Console.WriteLine(" ");
             Console.WriteLine("Enter your password");
             string password = Console.ReadLine();
-            if(db.readFile(username, email, password))
+            User user = new User(username, email, password);
+            if(db.readFile(user))
             {
-                clientMenu(username, email, password);
+                if (db.checkClientFile(email))
+                {
+                    clientMenu(user);
+                }
+                else
+                {
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Personal Details for " + username + "(" + email + ")\r\n----------------------------------------------------\r\n");
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Please provide your home address.");
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Unit number (0 = none):");
+                    string unit = Console.ReadLine();
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Street number:");
+                    string streetNum = Console.ReadLine();
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Street suffix:");
+                    string streetSuffix = Console.ReadLine();
+                    Console.WriteLine(" ");
+                    Console.WriteLine("City:");
+                    string city = Console.ReadLine();
+                    Console.WriteLine(" ");
+                    Console.WriteLine("State (ACT, NSW, NT, QLD, SA, TAS, VIC, WA):");
+                    string state = Console.ReadLine();
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Postcode (1000 .. 9999):");
+                    string postcode = Console.ReadLine();
+                    Console.WriteLine(" ");
+                    if(db.addAddress(email, "testing"))
+                    {
+                        clientMenu(user);
+                    }
+                }
+                
             }
             else
             {
                 Console.WriteLine("Incorrect Email/Password");
             }
         }
-        public static void clientMenu(string username, string email, string password)
+        public static void registration()
+        {
+            Data db = new Data();
+            db.Path = "Users.txt";
+            Console.WriteLine("Registration\n------------");
+            Console.WriteLine(" ");
+            Console.WriteLine("Please enter your name");
+            string username = Console.ReadLine();
+            bool usernameValid = checkUsername(username);
+            if (usernameValid)
+            {
+                Console.WriteLine("Username cannot be null");
+                Environment.Exit(0);
+            }
+            Console.WriteLine(" ");
+            Console.WriteLine("Please enter your email address");
+            string email = Console.ReadLine();
+            bool emailValid = checkEmail(email);
+            if (!emailValid)
+            {
+                Console.WriteLine("Email Criteria has not been met");
+                Environment.Exit(0);
+            }
+            Console.WriteLine(" ");
+            Console.WriteLine("Please choose a password\n* At least 8 characters\n* No white space characters\n* At least one upper -case letter\n* At least one lower -case letter\n* At least one digit\n* At least one special character");
+            string password = Console.ReadLine();
+            //PASSWORD INPUT CRITERIA                        
+            if (passwordCriteriaCheck(password) && !usernameValid && emailValid)
+            {
+                addData(username, email, password);
+            }
+        }
+        public static void clientMenu(User a)
         {
             Console.WriteLine(" ");
             Console.WriteLine("Client Menu\r\n-----------\r\n(1) Advertise Product\r\n(2) View My Product List\r\n(3) Search For Advertised Products\r\n(4) View Bids On My Products\r\n(5) View My Purchased Items\r\n(6) Log off ");
@@ -116,42 +183,16 @@ namespace Assessment2
             db.Path = "Users.txt";
             if (!db.checkEmailUniqueness(email))
             {
-                db.writeFile(username, email, password);
-                Console.WriteLine("Client " + username + "(" + email + " has successfully registered at the Auction House.");
+                if(db.writeFile(user))
+                {
+                    Console.WriteLine("Client " + username + "(" + email + " has successfully registered at the Auction House.");
+                }
             }
         }
-        public static void registration()
-        {
-            Data db = new Data();
-            db.Path = "Users.txt";
-            Console.WriteLine("Registration\n------------");
-            Console.WriteLine(" ");
-            Console.WriteLine("Please enter your name");
-            string username = Console.ReadLine();
-            bool usernameValid = checkUsername(username);
-            if (usernameValid)
-            {
-                Console.WriteLine("Username cannot be null");
-                Environment.Exit(0);
-            }
-            Console.WriteLine(" ");
-            Console.WriteLine("Please enter your email address");
-            string email = Console.ReadLine();
-            bool emailValid = checkEmail(email);
-            if (!emailValid)
-            {
-                Console.WriteLine("Email Criteria has not been met");
-                Environment.Exit(0);
-            }
-            Console.WriteLine(" ");
-            Console.WriteLine("Please choose a password\n* At least 8 characters\n* No white space characters\n* At least one upper -case letter\n* At least one lower -case letter\n* At least one digit\n* At least one special character");
-            string password = Console.ReadLine();
-            //PASSWORD INPUT CRITERIA                        
-            if (passwordCriteriaCheck(password) && !usernameValid && emailValid)
-            {
-                addData(username, email, password);
-            }
-        }
+
+
+
+        //START USER REGISTRATION VALIDATION
         public static bool checkEmail(string email)
         {
             int indexOfAt = email.IndexOf("@");
@@ -226,5 +267,6 @@ namespace Assessment2
                 return false;
             }
         }
+        //END USER REGISTRATION VALIDATION
     }
 }    //@joie: I LOVE RR DABED <3 

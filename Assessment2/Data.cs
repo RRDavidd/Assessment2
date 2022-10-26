@@ -44,7 +44,7 @@ namespace Assessment2
             }
         }
 
-        public bool readFile(string username, string email, string password)
+        public bool readFile(User a)
         {
             try
             {
@@ -53,9 +53,8 @@ namespace Assessment2
                 while (!sr.EndOfStream)
                 {
                     string line = sr.ReadLine();
-                    if (line.Contains(username + ";" + email + ";" + password))
+                    if (line.Contains(a.name + ";" + a.email + ";" + a.password))
                     {
-                        Console.WriteLine("RETURNED LINE " + line);
                         found = true;
                         return true;
                     }
@@ -75,49 +74,36 @@ namespace Assessment2
             }
         }
 
-        public bool addAddress()
+        public bool addAddress(string email, string address)
         {
-            try
+            if (clientFile(email))
             {
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public bool splitString(string username, string email, string password)
-        {
-            try
-            {
-                string splitThis = username + email + password;
-                string[] split = splitThis.Split(';');
-
-                foreach (string s in split)
+                string clientPath = email + ".txt";
+                try
                 {
-                    if (s != username + email + password)
-                    {
-                        Console.WriteLine(s);
-                    }       
+                    fs = new FileStream(clientPath, FileMode.Append);
+                    sw = new StreamWriter(fs);
+                    sw.WriteLine(address);
+                    sw.Close();
+                    fs.Close();
+                    return true;
                 }
-                return true;
+                catch
+                {
+                    return false;
+                }
             }
-            catch
-            {
-                return false;
-            }
+            return false;
         }
 
-        public bool writeFile(string username, string email, string password)
+        public bool writeFile(User a)
         {
             createFile();
             try
             {
                 fs = new FileStream(path, FileMode.Append);
                 sw = new StreamWriter(fs);
-                sw.WriteLine(username + ";" + email + ";" + password);
+                sw.WriteLine(a.name + ";" + a.email + ";" + a.password);
                 sw.Close();
                 fs.Close();
                 return true;
@@ -145,6 +131,37 @@ namespace Assessment2
                 return false;
             }
 
+        }
+
+        private bool clientFile(string email)
+        {
+            try
+            {
+                string clientPath = email + ".txt";
+                if (!File.Exists(clientPath))
+                {
+                    fs = new FileStream(clientPath, FileMode.CreateNew);
+                    fs.Close();
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+        public bool checkClientFile(string email)
+        {
+            string clientPath = email + ".txt";
+            if (!File.Exists(clientPath))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }

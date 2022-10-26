@@ -74,7 +74,7 @@ namespace Assessment2
             }
         }
 
-        public bool addAddress(string email, string address)
+        public bool addAddress(string email,Address a)
         {
             if (clientFile(email))
             {
@@ -83,7 +83,7 @@ namespace Assessment2
                 {
                     fs = new FileStream(clientPath, FileMode.Append);
                     sw = new StreamWriter(fs);
-                    sw.WriteLine(address);
+                    sw.WriteLine(a.unit + " " + a.streetNumber + " " + a.streetName + " " + a.streetSuffix + " " + a.city + " " + a.state + " " + a.postcode);
                     sw.Close();
                     fs.Close();
                     return true;

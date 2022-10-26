@@ -8,7 +8,7 @@ namespace Assessment2
 {
     class User
     {
-        public string name { get; set ; }
+        public string name { get; set; }
         public string email { get; set; }
         public string password { get; set; }
 
@@ -18,6 +18,7 @@ namespace Assessment2
             this.email = email;
             this.password = password;
         }
+
     }
 
  

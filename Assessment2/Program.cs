@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Design;
+using System.Diagnostics.Metrics;
+using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -68,7 +70,7 @@ namespace Assessment2
             User user = new User(username, email, password);
             if(db.readFile(user))
             {
-                if (db.checkClientFile(email))
+                if (db.checkClientAddressFile(email))
                 {
                     clientMenu(user);
                 }
@@ -115,7 +117,7 @@ namespace Assessment2
                 Console.WriteLine("Incorrect Email/Password");
             }
         }
-        public static void clientMenu(User a)
+        public static void clientMenu(User user)
         {
             Console.WriteLine(" ");
             Console.WriteLine("Client Menu\r\n-----------\r\n(1) Advertise Product\r\n(2) View My Product List\r\n(3) Search For Advertised Products\r\n(4) View Bids On My Products\r\n(5) View My Purchased Items\r\n(6) Log off ");
@@ -126,15 +128,125 @@ namespace Assessment2
             {
                 if(optionValue == 1)
                 {
-                    Console.WriteLine("1");
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Product Advertisement for " + user.name + "(" + user.email + ")\r\n---------------------------------------------------------------------------------");
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Product Name");
+                    string productName = Console.ReadLine();
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Product Description");
+                    string productDescription = Console.ReadLine();
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Product price ($d.cc)");
+                    string productPrice = Console.ReadLine();
+                    Console.WriteLine(" ");
+                    Product product = new Product(productName, productDescription, productPrice);
+                    Data db = new Data();
+                    if (db.checkClientProductFile(user.email))
+                    {
+                        if(db.addProducts(user.email, product))
+                        {
+                            db.addAllProducts(product);
+                            Console.WriteLine("Successfully added product " + product.productName + ", " + product.productDescription + ", " + product.price + ".");
+                            Console.WriteLine(" ");
+                            clientMenu(user);
+                        }
+                    } else
+                    {
+                        if (db.clientProductFile(user.email))
+                        {
+                            if (db.addProducts(user.email, product))
+                            {
+                                db.addAllProducts(product);
+                                Console.WriteLine("Successfully added product " + product.productName + ", " + product.productDescription + ", " + product.price + ".");
+                                Console.WriteLine(" ");
+                                clientMenu(user);
+                            }
+                        }
+                    }
                 }
                 if (optionValue == 2)
                 {
-                    Console.WriteLine("2");
+                    Console.WriteLine("Product List for " + user.name + "(" + user.email + ")\r\n------------------------------------------------");
+                    Console.WriteLine(" ");
+                    Data db = new Data();
+                    db.readUserProductFile(user.email, null, null, null);
+                    Console.WriteLine(" ");
+                    clientMenu(user);
                 }
                 if (optionValue == 3)
                 {
-                    Console.WriteLine("3");
+                    Console.WriteLine("Product Search for " + user.name + "(" + user.email + ")\r\n---------------------------------------------------------------------------------");
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Please supply a search phrase (ALL to see all products)");
+                    string searchInput = Console.ReadLine();
+                    if(searchInput == "ALL")
+                    {
+                        Data db = new Data();
+                        Console.WriteLine("Item #\tProduct name\tDescription\tList price\tBidder name\tBidder email\tBid amt");
+                        db.readAllProductsFile(null, null, null);
+                        Console.WriteLine(" ");
+                        Console.WriteLine("Would you like to place a bid on any of these items (yes or no)?");
+                        string answer = Console.ReadLine();
+                        if(answer.ToUpper() == "YES")
+                        {
+                            Console.WriteLine(" ");
+                            Console.WriteLine("Please select a product using their item number");
+                            string selected = Console.ReadLine();
+                            db.selectedProduct(selected, null);
+                            Console.WriteLine(" ");
+                            Console.WriteLine("How much do you bid?");
+                            string userBid = Console.ReadLine();
+                            db.selectedProduct(selected, userBid);
+                            Console.WriteLine(" ");
+                            Console.WriteLine("Delivery Instructions\r\n---------------------\r\n(1) Click and collect\r\n(2) Home Delivery");
+                            string selection = Console.ReadLine();
+                            if(selection == "1")
+                            {
+
+                            } else if(selection == "2")
+                            {
+                                Console.WriteLine(" ");
+                                Console.WriteLine("Please provide your home address.");
+                                Console.WriteLine(" ");
+                                Console.WriteLine("Unit number (0 = none):");
+                                bool unit = Int32.TryParse(Console.ReadLine(), out int unitNumber);
+                                Console.WriteLine(" ");
+                                Console.WriteLine("Street number:");
+                                bool streetNum = Int32.TryParse(Console.ReadLine(), out int streetNumber);
+                                Console.WriteLine(" ");
+                                Console.WriteLine("Street Name:");
+                                string streetName = Console.ReadLine();
+                                Console.WriteLine(" ");
+                                Console.WriteLine("Street suffix:");
+                                string streetSuffix = Console.ReadLine();
+                                Console.WriteLine(" ");
+                                Console.WriteLine("City:");
+                                string city = Console.ReadLine();
+                                Console.WriteLine(" ");
+                                Console.WriteLine("State (ACT, NSW, NT, QLD, SA, TAS, VIC, WA):");
+                                string state = Console.ReadLine();
+                                Console.WriteLine(" ");
+                                Console.WriteLine("Postcode (1000 .. 9999):");
+                                bool post = Int32.TryParse(Console.ReadLine(), out int postcode);
+                                Console.WriteLine(" ");
+                                Address address = new Address(unitNumber, streetNumber, streetName, streetSuffix, city, postcode, state);
+                                if (address.checkUnit(address.unit) && address.checkStreetNumber(address.streetNumber) && address.checkStreetName(address.streetName) && address.checkCity(address.city) && address.checkPostcode(address.postcode) && address.checkState(address.state))
+                                {
+                                    db.deleteAddressFile(user.email);
+                                    if (db.addAddress(user.email, address))
+                                    {
+                                        Console.Write("Thank you for your bid. If successful, the item will be provided via delivery to " + address.unit + "/" + address.streetNumber + " " + address.streetName + " " + address.streetSuffix + ", " + address.city + " " + address.state + " " +address.postcode);
+                                        clientMenu(user);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            clientMenu(user);
+                        }
+                    }
                 }
                 if (optionValue == 4)
                 {

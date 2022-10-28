@@ -112,7 +112,8 @@ namespace Assessment2
             }
             catch
             {
-                Console.WriteLine("Cannot read file");
+                Console.WriteLine(" ");
+                Console.WriteLine("No products to list");
                 return false;
             }
         }

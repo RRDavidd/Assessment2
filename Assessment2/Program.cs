@@ -183,65 +183,70 @@ namespace Assessment2
                     if(searchInput == "ALL")
                     {
                         Data db = new Data();
-                        Console.WriteLine("Item #\tProduct name\tDescription\tList price\tBidder name\tBidder email\tBid amt");
-                        db.readAllProductsFile(null, null, null);
-                        Console.WriteLine(" ");
-                        Console.WriteLine("Would you like to place a bid on any of these items (yes or no)?");
-                        string answer = Console.ReadLine();
-                        if(answer.ToUpper() == "YES")
+                        if(db.readAllProductsFile(null, null, null))
                         {
+                            Console.WriteLine("Item #\tProduct name\tDescription\tList price\tBidder name\tBidder email\tBid amt");
+                            db.readAllProductsFile(null, null, null);
                             Console.WriteLine(" ");
-                            Console.WriteLine("Please select a product using their item number");
-                            string selected = Console.ReadLine();
-                            db.selectedProduct(selected, null);
-                            Console.WriteLine(" ");
-                            Console.WriteLine("How much do you bid?");
-                            string userBid = Console.ReadLine();
-                            db.selectedProduct(selected, userBid);
-                            Console.WriteLine(" ");
-                            Console.WriteLine("Delivery Instructions\r\n---------------------\r\n(1) Click and collect\r\n(2) Home Delivery");
-                            string selection = Console.ReadLine();
-                            if(selection == "1")
-                            {
-
-                            } else if(selection == "2")
+                            Console.WriteLine("Would you like to place a bid on any of these items (yes or no)?");
+                            string answer = Console.ReadLine();
+                            if (answer.ToUpper() == "YES")
                             {
                                 Console.WriteLine(" ");
-                                Console.WriteLine("Please provide your home address.");
+                                Console.WriteLine("Please select a product using their item number");
+                                string selected = Console.ReadLine();
+                                db.selectedProduct(selected, null);
                                 Console.WriteLine(" ");
-                                Console.WriteLine("Unit number (0 = none):");
-                                bool unit = Int32.TryParse(Console.ReadLine(), out int unitNumber);
+                                Console.WriteLine("How much do you bid?");
+                                string userBid = Console.ReadLine();
+                                db.selectedProduct(selected, userBid);
                                 Console.WriteLine(" ");
-                                Console.WriteLine("Street number:");
-                                bool streetNum = Int32.TryParse(Console.ReadLine(), out int streetNumber);
-                                Console.WriteLine(" ");
-                                Console.WriteLine("Street Name:");
-                                string streetName = Console.ReadLine();
-                                Console.WriteLine(" ");
-                                Console.WriteLine("Street suffix:");
-                                string streetSuffix = Console.ReadLine();
-                                Console.WriteLine(" ");
-                                Console.WriteLine("City:");
-                                string city = Console.ReadLine();
-                                Console.WriteLine(" ");
-                                Console.WriteLine("State (ACT, NSW, NT, QLD, SA, TAS, VIC, WA):");
-                                string state = Console.ReadLine();
-                                Console.WriteLine(" ");
-                                Console.WriteLine("Postcode (1000 .. 9999):");
-                                bool post = Int32.TryParse(Console.ReadLine(), out int postcode);
-                                Console.WriteLine(" ");
-                                Address address = new Address(unitNumber, streetNumber, streetName, streetSuffix, city, postcode, state);
-                                if (address.checkUnit(address.unit) && address.checkStreetNumber(address.streetNumber) && address.checkStreetName(address.streetName) && address.checkCity(address.city) && address.checkPostcode(address.postcode) && address.checkState(address.state))
+                                Console.WriteLine("Delivery Instructions\r\n---------------------\r\n(1) Click and collect\r\n(2) Home Delivery");
+                                string selection = Console.ReadLine();
+                                if (selection == "1")
                                 {
-                                    db.deleteAddressFile(user.email);
-                                    if (db.addAddress(user.email, address))
+
+                                }
+                                else if (selection == "2")
+                                {
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("Please provide your home address.");
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("Unit number (0 = none):");
+                                    bool unit = Int32.TryParse(Console.ReadLine(), out int unitNumber);
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("Street number:");
+                                    bool streetNum = Int32.TryParse(Console.ReadLine(), out int streetNumber);
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("Street Name:");
+                                    string streetName = Console.ReadLine();
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("Street suffix:");
+                                    string streetSuffix = Console.ReadLine();
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("City:");
+                                    string city = Console.ReadLine();
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("State (ACT, NSW, NT, QLD, SA, TAS, VIC, WA):");
+                                    string state = Console.ReadLine();
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("Postcode (1000 .. 9999):");
+                                    bool post = Int32.TryParse(Console.ReadLine(), out int postcode);
+                                    Console.WriteLine(" ");
+                                    Address address = new Address(unitNumber, streetNumber, streetName, streetSuffix, city, postcode, state);
+                                    if (address.checkUnit(address.unit) && address.checkStreetNumber(address.streetNumber) && address.checkStreetName(address.streetName) && address.checkCity(address.city) && address.checkPostcode(address.postcode) && address.checkState(address.state))
                                     {
-                                        Console.Write("Thank you for your bid. If successful, the item will be provided via delivery to " + address.unit + "/" + address.streetNumber + " " + address.streetName + " " + address.streetSuffix + ", " + address.city + " " + address.state + " " +address.postcode);
-                                        clientMenu(user);
+                                        db.deleteAddressFile(user.email);
+                                        if (db.addAddress(user.email, address))
+                                        {
+                                            Console.Write("Thank you for your bid. If successful, the item will be provided via delivery to " + address.unit + "/" + address.streetNumber + " " + address.streetName + " " + address.streetSuffix + ", " + address.city + " " + address.state + " " + address.postcode);
+                                            clientMenu(user);
+                                        }
                                     }
                                 }
                             }
-                        }
+
+                        } 
                         else
                         {
                             clientMenu(user);

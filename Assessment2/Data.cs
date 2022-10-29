@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -88,6 +89,7 @@ namespace Assessment2
                 string clientPath = "allproducts" + ".txt";
                 sr = new StreamReader(clientPath);
                 int count = 1;
+                
                 if(bidderName == null)
                 {
                     bidderName = "-";
@@ -102,10 +104,53 @@ namespace Assessment2
                 }
                 while (!sr.EndOfStream)
                 {
-                    string line = count + "       " + sr.ReadLine() + "     " + bidderName + "     " + bidderEmail + "      " + bidderAmount;
+                    string line = sr.ReadLine();
+                    int indexOf = line.IndexOf(';');
+                    if (indexOf >= 0)
+                    {
+                        line = line.Substring(0, indexOf);
+                    }
+                    string finalLine = count + "       " + line;
                     addBidding(line);
-                    Console.WriteLine(line);
+                    Console.WriteLine(finalLine);
                     count++;
+                }
+                sr.Close();
+                return true; 
+            }
+            catch
+            {
+                Console.WriteLine(" ");
+                Console.WriteLine("No products to list");
+                return false;
+            }
+        }
+
+        //READ ALLPRODUCTS FILE WITH SEARCHING
+        public bool readSearchProductsFile(string searchInput)
+        {
+            createBiddingFile();
+            try
+            {
+                string clientPath = "allproducts" + ".txt";
+                sr = new StreamReader(clientPath);
+                int count = 1;
+                while (!sr.EndOfStream)
+                {
+                    string line = sr.ReadLine();
+                    if (line.Contains(searchInput))
+                    {
+                        int indexOf = line.IndexOf(';');
+                        if (indexOf >= 0)
+                        {
+                            line = line.Substring(0, indexOf);
+                        }
+                        string finalLine = count + "       " + line + "     ";
+                        addBidding(line);
+                        Console.WriteLine(finalLine);
+                        count++;
+                        return true;
+                    }
                 }
                 sr.Close();
                 return false;
@@ -119,28 +164,16 @@ namespace Assessment2
         }
 
         //READ USER PRODUCTS FILE
-        public bool readUserProductFile(string email, string? bidderName, string? bidderEmail, string? bidderAmount)
+        public bool readUserProductFile(string email)
         {
             try
             {
                 string clientPath = email + "products" + ".txt";
                 sr = new StreamReader(clientPath);
                 int count = 1;
-                if (bidderName == null)
-                {
-                    bidderName = "-";
-                }
-                if (bidderEmail == null)
-                {
-                    bidderEmail = "-";
-                }
-                if (bidderAmount == null)
-                {
-                    bidderAmount = "-";
-                }
                 while (!sr.EndOfStream)
                 {
-                    string line = count + "       " + sr.ReadLine() + "     " + bidderName + "     " + bidderEmail + "      " + bidderAmount;
+                    string line = count + "       " + sr.ReadLine();
                     addBidding(line);
                     Console.WriteLine(line);
                     count++;
@@ -156,32 +189,26 @@ namespace Assessment2
         }
 
         //SELECT PRODUCT TO BID
-        public bool selectedProduct(string selected, string? bidderAmount)
+        public bool selectedProduct(int selected, string? bidderAmount, User a)
         {
             try
             {
                 string clientPath = "biddings" + ".txt";
-                sr = new StreamReader(clientPath);
-                char trim = '-';
-                while (!sr.EndOfStream)
+                string[] lines = File.ReadAllLines(clientPath);
+                if(bidderAmount == null)
                 {
-                    string line = sr.ReadLine();
-                    if(line[0].ToString() == selected)
-                    {
-                        if(bidderAmount == null)
-                        {
-                            Console.WriteLine("Bidding for " + line + ", current highest bid " + bidderAmount);
-                        }
-                        else
-                        {
-                            line.Trim(trim);
-                            Console.WriteLine("Your bid of " + "$" + bidderAmount + " for " + line + " is placed.");
-                        }
-                        return true;
-                    }
+                    Console.WriteLine("Product selected is " + lines[selected - 1] + " and highest bid is " + "$" + bidderAmount);
                 }
-                sr.Close();
-                return false;
+                string[] linesArray = File.ReadAllLines("allproducts.txt");
+                int indexOf = linesArray[selected - 1].IndexOf(';');
+                string input;
+                if (indexOf >= 0)
+                {
+                    input = linesArray[selected - 1].Substring(indexOf + 1);
+                    replaceString(lines[selected - 1] + " " + a.name + " " + a.email + " " + "$" + bidderAmount, input + "products.txt", selected);
+                    replaceString(lines[selected - 1] + " " + a.name + " " + a.email + " " + "$" + bidderAmount, input + "allproducts.txt", selected);
+                }
+                return true;
             }
             catch
             {
@@ -258,7 +285,7 @@ namespace Assessment2
         }
 
         //CREATE PRODUCT FILE FOR ALL REGISTERED ADVERTISED PRODUCTS
-        public bool addAllProducts(Product a)
+        public bool addAllProducts(Product a, string email)
         {
             if (allProductFile())
             {
@@ -267,7 +294,7 @@ namespace Assessment2
                 {
                     fs = new FileStream(clientPath, FileMode.Append);
                     sw = new StreamWriter(fs);
-                    sw.WriteLine(a.productName + " " + a.productDescription + " " + a.price);
+                    sw.WriteLine(a.productName + " " + a.productDescription + " " + a.price + ";" + email);
                     sw.Close();
                     fs.Close();
                     return true;
@@ -397,12 +424,34 @@ namespace Assessment2
             }
         }
 
+        //DELETE ADDRESS FILE
         public bool deleteAddressFile(string email)
         {
             try
             {
                 File.Delete(email + "address.txt");
                 return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        //CHECK IF ALLPRODUCTS IS EMPTY
+        public bool checkAllProductsFile()
+        {
+            try
+            {
+                var info = new FileInfo("allproducts.txt");
+                if(info.Length == 0)
+                {
+                    return false ;
+                }
+                else
+                {
+                    return true ;
+                }
             }
             catch
             {
@@ -435,6 +484,22 @@ namespace Assessment2
             else
             {
                 return true;
+            }
+        }
+
+        //REPLACE A STRING IN A TEXTFILE
+        public bool replaceString(string newText, string fileName, int line_to_edit)
+        {
+            try
+            {
+                string[] arrLine = File.ReadAllLines(fileName);
+                arrLine[line_to_edit - 1] = newText;
+                File.WriteAllLines(fileName, arrLine);
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

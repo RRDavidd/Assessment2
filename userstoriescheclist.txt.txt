@@ -5,3 +5,11 @@ story 4: OK
 story 5: OK
 story 6: OK
 story 7: OK
+story 8: OK
+story 9: OK
+story 10: OK
+story 11: partially ok
+story 12: OK
+story 13:
+story 14: home address only
+story 15:

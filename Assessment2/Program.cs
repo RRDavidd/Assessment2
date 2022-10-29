@@ -53,6 +53,8 @@ namespace Assessment2
             } while (run);
             Environment.Exit(0);
         }
+
+        //LOGGED IN USER FUNCTIONALITY START
         public static void login()
         {
             Data db = new Data();
@@ -70,6 +72,7 @@ namespace Assessment2
             User user = new User(username, email, password);
             if(db.readFile(user))
             {
+                //CHECK IF USER HAS PROVIDED ADDRESS BEFORE
                 if (db.checkClientAddressFile(email))
                 {
                     clientMenu(user);
@@ -126,6 +129,7 @@ namespace Assessment2
             bool option = Int32.TryParse(Console.ReadLine(), out int optionValue);
             if (option)
             {
+                //PRODUCT ADVERSTISEMENT START
                 if(optionValue == 1)
                 {
                     Console.WriteLine(" ");
@@ -146,7 +150,7 @@ namespace Assessment2
                     {
                         if(db.addProducts(user.email, product))
                         {
-                            db.addAllProducts(product);
+                            db.addAllProducts(product, user.email);
                             Console.WriteLine("Successfully added product " + product.productName + ", " + product.productDescription + ", " + product.price + ".");
                             Console.WriteLine(" ");
                             clientMenu(user);
@@ -157,7 +161,7 @@ namespace Assessment2
                         {
                             if (db.addProducts(user.email, product))
                             {
-                                db.addAllProducts(product);
+                                db.addAllProducts(product, user.email);
                                 Console.WriteLine("Successfully added product " + product.productName + ", " + product.productDescription + ", " + product.price + ".");
                                 Console.WriteLine(" ");
                                 clientMenu(user);
@@ -165,25 +169,32 @@ namespace Assessment2
                         }
                     }
                 }
+                //PRODUCT ADVERSTISEMENT END
+
+                //PRODUCT LIST START
                 if (optionValue == 2)
                 {
                     Console.WriteLine("Product List for " + user.name + "(" + user.email + ")\r\n------------------------------------------------");
                     Console.WriteLine(" ");
+                    Console.WriteLine("Item #\tProduct name\tDescription\tList price\tBidder name\tBidder email\tBid amt");
                     Data db = new Data();
-                    db.readUserProductFile(user.email, null, null, null);
+                    db.readUserProductFile(user.email);
                     Console.WriteLine(" ");
                     clientMenu(user);
                 }
+                //PRODUCT LIST END
+
+                //PRODUCT SEARTCH START
                 if (optionValue == 3)
                 {
                     Console.WriteLine("Product Search for " + user.name + "(" + user.email + ")\r\n---------------------------------------------------------------------------------");
                     Console.WriteLine(" ");
                     Console.WriteLine("Please supply a search phrase (ALL to see all products)");
-                    string searchInput = Console.ReadLine();
+                    string searchInput = Console.ReadLine().ToUpper();
                     if(searchInput == "ALL")
                     {
                         Data db = new Data();
-                        if(db.readAllProductsFile(null, null, null))
+                        if(db.checkAllProductsFile())
                         {
                             Console.WriteLine("Item #\tProduct name\tDescription\tList price\tBidder name\tBidder email\tBid amt");
                             db.readAllProductsFile(null, null, null);
@@ -194,12 +205,86 @@ namespace Assessment2
                             {
                                 Console.WriteLine(" ");
                                 Console.WriteLine("Please select a product using their item number");
-                                string selected = Console.ReadLine();
-                                db.selectedProduct(selected, null);
+                                bool selected = Int32.TryParse(Console.ReadLine(), out int selectedValue);
+                                db.selectedProduct(selectedValue, null, user);
                                 Console.WriteLine(" ");
                                 Console.WriteLine("How much do you bid?");
                                 string userBid = Console.ReadLine();
-                                db.selectedProduct(selected, userBid);
+                                db.selectedProduct(selectedValue, userBid, user);
+                                Console.WriteLine(" ");
+                                Console.WriteLine("Delivery Instructions\r\n---------------------\r\n(1) Click and collect\r\n(2) Home Delivery");
+                                string selection = Console.ReadLine();
+                                if (selection == "1")
+                                {
+
+                                }
+                                else if (selection == "2")
+                                {
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("Please provide your home address.");
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("Unit number (0 = none):");
+                                    bool unit = Int32.TryParse(Console.ReadLine(), out int unitNumber);
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("Street number:");
+                                    bool streetNum = Int32.TryParse(Console.ReadLine(), out int streetNumber);
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("Street Name:");
+                                    string streetName = Console.ReadLine();
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("Street suffix:");
+                                    string streetSuffix = Console.ReadLine();
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("City:");
+                                    string city = Console.ReadLine();
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("State (ACT, NSW, NT, QLD, SA, TAS, VIC, WA):");
+                                    string state = Console.ReadLine();
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine("Postcode (1000 .. 9999):");
+                                    bool post = Int32.TryParse(Console.ReadLine(), out int postcode);
+                                    Console.WriteLine(" ");
+                                    Address address = new Address(unitNumber, streetNumber, streetName, streetSuffix, city, postcode, state);
+                                    if (address.checkUnit(address.unit) && address.checkStreetNumber(address.streetNumber) && address.checkStreetName(address.streetName) && address.checkCity(address.city) && address.checkPostcode(address.postcode) && address.checkState(address.state))
+                                    {
+                                        db.deleteAddressFile(user.email);
+                                        if (db.addAddress(user.email, address))
+                                        {
+                                            Console.Write("Thank you for your bid. If successful, the item will be provided via delivery to " + address.unit + "/" + address.streetNumber + " " + address.streetName + " " + address.streetSuffix + ", " + address.city + " " + address.state + " " + address.postcode);
+                                            clientMenu(user);
+                                        }
+                                    }
+                                }
+                            } else
+                            {
+                                clientMenu(user);
+                            }
+
+                        } 
+                        else
+                        {
+                            clientMenu(user);
+                        }
+                    }
+                    else
+                    {
+                        Data db = new Data();
+                        if (db.checkAllProductsFile())
+                        {
+                            db.readSearchProductsFile(searchInput);
+                            Console.WriteLine(" ");
+                            Console.WriteLine("Would you like to place a bid on any of these items (yes or no)?");
+                            string answer = Console.ReadLine().ToUpper();
+                            if (answer == "YES")
+                            {
+                                Console.WriteLine(" ");
+                                Console.WriteLine("Please select a product using their item number");
+                                bool selected = Int32.TryParse(Console.ReadLine(), out int selectedValue);
+                                db.selectedProduct(selectedValue, null, user);
+                                Console.WriteLine(" ");
+                                Console.WriteLine("How much do you bid?");
+                                string userBid = Console.ReadLine();
+                                db.selectedProduct(selectedValue, userBid, user);
                                 Console.WriteLine(" ");
                                 Console.WriteLine("Delivery Instructions\r\n---------------------\r\n(1) Click and collect\r\n(2) Home Delivery");
                                 string selection = Console.ReadLine();
@@ -245,21 +330,27 @@ namespace Assessment2
                                     }
                                 }
                             }
+                            else
+                            {
+                                clientMenu(user);
+                            }
 
-                        } 
-                        else
+                        } else
                         {
                             clientMenu(user);
                         }
                     }
                 }
+                //PRODUCT SEARTCH END
+
+
                 if (optionValue == 4)
                 {
-                    Console.WriteLine("4");
+                    clientMenu(user);
                 }
                 if (optionValue == 5)
                 {
-                    Console.WriteLine("5");
+                    clientMenu(user);
                 }
                 if (optionValue == 6)
                 {
@@ -279,8 +370,7 @@ namespace Assessment2
                 }
             }
         }
-
-
+        //LOGGED IN USER FUNCTIONALITY END
 
         //START USER REGISTRATION VALIDATION
         public static void registration()
@@ -392,4 +482,4 @@ namespace Assessment2
         }
         //END USER REGISTRATION VALIDATION
     }
-}    //@joie: I LOVE RR DABED <3 
+}   
